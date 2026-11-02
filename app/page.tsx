@@ -14,11 +14,16 @@ import { toPng } from "html-to-image";
 import JSZip from "jszip";
 import { QRCodeSVG } from "qrcode.react";
 import {
+  ArrowDown,
+  Calendar,
   Check,
+  Clock,
   Download,
+  MapPin,
   Minus,
   Plus,
   Share2,
+  Trophy,
   Upload,
   ArrowLeftRight,
   ArrowUpDown,
@@ -448,54 +453,50 @@ RSVP → luma.com/h7aqkkw4`;
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Top banner — official side event stripe, lime like the brand asset */}
-      <div className="bg-[#c6ff3d] text-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-center sm:justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3 font-mono text-[11px] sm:text-[12px] tracking-[0.3em] uppercase font-bold">
-            <span className="inline-block w-1.5 h-1.5 bg-[#0a0a0a] rounded-full animate-pulse" />
-            Hack the Feed is an official Paris Creator Week side event
-          </div>
+      {/* Official side-event bar — subtle, informative, not a loud lime strip */}
+      <div className="bg-neutral-950 border-b border-[#c6ff3d]/30 text-[#c6ff3d]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-3 font-mono text-[10px] sm:text-[11px] tracking-[0.3em] uppercase">
+          <span className="inline-block w-1 h-1 bg-[#c6ff3d] rounded-full animate-pulse" />
+          Official Paris Creator Week side event
+          <span className="opacity-50">·</span>
           <a
             href="https://pariscreatorweek.com"
             target="_blank"
             rel="noreferrer"
-            className="font-mono text-[11px] tracking-[0.3em] uppercase font-bold hover:underline hidden sm:inline"
+            className="hover:underline"
           >
-            About Paris Creator Week →
+            Learn more →
           </a>
         </div>
       </div>
 
-      {/* Header */}
-      <header className="border-b border-neutral-800 sticky top-0 z-10 bg-neutral-950/90 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      {/* Header — brand mark only; CTAs live in the hero to avoid duplication */}
+      <header className="border-b border-neutral-800 sticky top-0 z-10 bg-neutral-950/85 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <a href="#top" className="flex items-center gap-3 group">
             <span className="inline-block w-2 h-2 bg-[#c6ff3d] rounded-full" />
-            <span className="font-mono text-[12px] tracking-[0.3em] uppercase">
-              Hack the Feed · Builder Pass
+            <span className="font-mono text-[12px] tracking-[0.3em] uppercase group-hover:text-[#c6ff3d] transition-colors">
+              Hack the Feed
             </span>
-          </div>
+          </a>
           <a
-            href="https://luma.com/h7aqkkw4"
-            target="_blank"
-            rel="noreferrer"
-            className="font-mono text-[12px] tracking-[0.25em] uppercase text-neutral-400 hover:text-[#c6ff3d]"
+            href="#builder"
+            className="font-mono text-[11px] tracking-[0.3em] uppercase text-neutral-400 hover:text-[#c6ff3d] transition-colors"
           >
-            Register on Luma →
+            Build my pass →
           </a>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="border-b border-neutral-800 relative overflow-hidden">
+      <section id="top" className="border-b border-neutral-800 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04] [background-image:radial-gradient(#c6ff3d_1px,transparent_1px)] [background-size:22px_22px] pointer-events-none" />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grid lg:grid-cols-[1fr_420px] gap-8 lg:gap-10 items-center min-w-0">
+        {/* Subtle lime vignette top-left gives the hero a light source */}
+        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-[#c6ff3d]/[0.06] blur-3xl pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 grid lg:grid-cols-[1fr_420px] gap-8 lg:gap-10 items-center min-w-0">
           <div className="min-w-0">
-            <div className="font-mono text-[12px] tracking-[0.3em] uppercase text-[#c6ff3d]">
-              AI Video Hackathon · Builder Pass
-            </div>
-            <div className="mt-4">
-              <HackTheFeedTitle size={320} />
+            <div>
+              <HackTheFeedTitle size={340} />
             </div>
             <p className="mt-4 text-[18px] text-neutral-200 font-bold max-w-md leading-snug">
               The AI video search hackathon.
@@ -504,28 +505,50 @@ RSVP → luma.com/h7aqkkw4`;
               Build your builder pass, then share it across X, LinkedIn and
               Instagram.
             </p>
+            <div className="mt-7 flex items-center gap-4 flex-wrap">
+              <a
+                href="#builder"
+                className="group inline-flex items-center gap-2 bg-[#c6ff3d] hover:bg-[#d7ff6a] text-[#0a0a0a] rounded-md px-5 py-3 text-sm font-bold font-mono tracking-widest uppercase transition-all shadow-[0_10px_30px_-10px_rgba(198,255,61,0.4)] hover:shadow-[0_14px_40px_-10px_rgba(198,255,61,0.6)]"
+              >
+                Build my pass
+                <ArrowDown
+                  size={16}
+                  className="transition-transform group-hover:translate-y-0.5"
+                />
+              </a>
+              <a
+                href="https://luma.com/h7aqkkw4"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-mono tracking-widest uppercase text-neutral-400 hover:text-[#c6ff3d] transition-colors"
+              >
+                Register on Luma →
+              </a>
+            </div>
           </div>
           <HeroEventSticker />
         </div>
       </section>
 
-      {/* HOSTED BY — full-width cream band so every partner logo renders at
-          its natural brand color against a known surface. Fixes the problem
-          where the navy Albert School PNG was invisible on the dark hero. */}
+      {/* Partner band — cream so brand colors render correctly, framed with
+          the official event language ("in partnership with"). */}
       <section className="bg-[#f3efe6] text-[#0a0a0a] border-b border-neutral-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 flex-wrap">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-7 flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-10 flex-wrap">
           <div className="font-mono text-[11px] tracking-[0.3em] uppercase text-[#0a0a0a]/60 shrink-0">
-            Hosted by
+            In partnership with
           </div>
-          <PartnerRow size={32} color="#0a0a0a" gap={44} wrap />
+          <PartnerRow size={30} color="#0a0a0a" gap={40} wrap />
         </div>
       </section>
 
       {/* Main */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-10 grid lg:grid-cols-[380px_1fr] gap-8 lg:gap-10">
+      <main
+        id="builder"
+        className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-10 scroll-mt-24 grid lg:grid-cols-[380px_1fr] gap-8 lg:gap-10"
+      >
         {/* Form column */}
         <div className="space-y-8">
-          <SectionTitle index="01" title="Make it yours" />
+          <SectionTitle title="Make it yours" hint="Edits apply live →" />
 
           <FormSection label="You">
             <Field label="Full name" counter={{ value: data.name, max: 40 }}>
@@ -713,7 +736,7 @@ RSVP → luma.com/h7aqkkw4`;
         {/* Preview + download column */}
         <div className="space-y-6 min-w-0">
           <div className="flex items-baseline justify-between gap-4 flex-wrap">
-            <SectionTitle index="02" title="Your builder pass" />
+            <SectionTitle title="Your builder pass" />
             <div className="font-mono text-[11px] text-neutral-500 tracking-[0.25em] uppercase">
               {currentInfo.w}×{currentInfo.h}
             </div>
@@ -1010,51 +1033,52 @@ function HeroEventSticker() {
       <div className="relative bg-[#f3efe6] text-[#0a0a0a] rounded-xl p-6 font-mono shadow-[0_30px_80px_-20px_rgba(198,255,61,0.15)]">
         <div className="absolute -top-2 left-10 w-4 h-4 rounded-full bg-neutral-950" />
         <div className="absolute -top-2 right-10 w-4 h-4 rounded-full bg-neutral-950" />
-        <div className="flex items-start justify-between gap-4 pb-4 border-b border-dashed border-[#0a0a0a]/30">
-          <div>
-            <div className="text-[10px] tracking-[0.3em] uppercase text-[#0a0a0a]/60">
-              Event
-            </div>
-            <div className="mt-1 text-[18px] font-bold leading-tight">
-              AI Video Search Hackathon
-            </div>
+        <div className="pb-4 border-b border-dashed border-[#0a0a0a]/30">
+          <div className="text-[10px] tracking-[0.3em] uppercase text-[#0a0a0a]/60">
+            Event
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <ParisCreatorWeekMark height={54} color="#0a0a0a" />
-            <div className="text-[9px] tracking-[0.3em] uppercase font-bold text-[#0a0a0a]/70">
-              Official side event
-            </div>
+          <div className="mt-1 text-[20px] font-bold leading-tight">
+            AI Video Search Hackathon
           </div>
         </div>
         <div className="pt-4 grid grid-cols-2 gap-4 text-[12px]">
-          <StickerCell label="Date" value={<>Sat · 7 Nov<br />2026</>} />
-          <StickerCell label="Time" value={<>10:00 — 17:00</>} />
-          <StickerCell label="City" value={<>Paris, FR</>} />
           <StickerCell
+            icon={<Calendar size={14} />}
+            label="Date"
+            value={<>Sat · 7 Nov<br />2026</>}
+          />
+          <StickerCell
+            icon={<Clock size={14} />}
+            label="Time"
+            value={<>10:00 — 17:00</>}
+          />
+          <StickerCell
+            icon={<MapPin size={14} />}
+            label="City"
+            value={<>Paris, FR</>}
+          />
+          <StickerCell
+            icon={<Trophy size={14} />}
             label="Prize pool"
             value={<>€1,000 +<br />3,500 credits</>}
           />
         </div>
-        <div className="mt-5 flex items-stretch gap-3 border-t border-dashed border-[#0a0a0a]/30 pt-4">
+        <div className="mt-5 flex items-center gap-3 border-t border-dashed border-[#0a0a0a]/30 pt-4">
           <div className="bg-[#0a0a0a] p-1.5 rounded-sm shrink-0">
             <QRCodeSVG
               value={QR_URL}
-              size={64}
+              size={56}
               bgColor="#0a0a0a"
               fgColor="#c6ff3d"
               level="L"
               marginSize={0}
             />
           </div>
-          <a
-            href="https://luma.com/h7aqkkw4"
-            target="_blank"
-            rel="noreferrer"
-            className="flex-1 flex items-center justify-between bg-[#0a0a0a] text-[#c6ff3d] rounded-sm px-3 py-2 text-[12px] tracking-[0.25em] uppercase font-bold hover:bg-neutral-800 transition-colors"
-          >
-            Register on Luma
-            <span aria-hidden>→</span>
-          </a>
+          <div className="flex-1 min-w-0 text-[10px] tracking-[0.3em] uppercase text-[#0a0a0a]/60 font-bold">
+            Scan to read
+            <br />
+            the announcement
+          </div>
         </div>
       </div>
     </div>
@@ -1062,15 +1086,18 @@ function HeroEventSticker() {
 }
 
 function StickerCell({
+  icon,
   label,
   value,
 }: {
+  icon?: ReactNode;
   label: string;
   value: ReactNode;
 }) {
   return (
     <div>
-      <div className="text-[10px] tracking-[0.3em] uppercase text-[#0a0a0a]/60">
+      <div className="flex items-center gap-1.5 text-[10px] tracking-[0.3em] uppercase text-[#0a0a0a]/60">
+        {icon && <span className="text-[#0a0a0a]/50">{icon}</span>}
         {label}
       </div>
       <div className="mt-0.5 text-[14px] font-bold leading-tight">{value}</div>
@@ -1107,13 +1134,15 @@ function DownloadToast({ label }: { label: string }) {
   );
 }
 
-function SectionTitle({ index, title }: { index: string; title: string }) {
+function SectionTitle({ title, hint }: { title: string; hint?: string }) {
   return (
-    <div className="flex items-baseline gap-4">
-      <span className="font-mono text-[#c6ff3d] text-xs tracking-[0.3em]">
-        {index}
-      </span>
+    <div className="flex items-baseline gap-4 flex-wrap">
       <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+      {hint && (
+        <span className="font-mono text-neutral-500 text-[11px] tracking-[0.25em] uppercase">
+          {hint}
+        </span>
+      )}
     </div>
   );
 }

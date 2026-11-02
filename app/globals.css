@@ -11,6 +11,10 @@ body {
   color: #f3efe6;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   -webkit-font-smoothing: antialiased;
 }

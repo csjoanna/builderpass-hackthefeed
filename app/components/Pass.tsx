@@ -78,6 +78,8 @@ function ScaledContainer({
 const CREAM = "#f3efe6";
 const INK = "#0a0a0a";
 const STUB_CREAM = CREAM;
+// HTF signature lime, darkened enough to read on cream at small sizes.
+const HTF_LIME = "#4d7c0f";
 const CARD_SHADOW =
   "0 10px 30px rgba(10,10,10,0.14), 0 2px 6px rgba(10,10,10,0.06)";
 
@@ -238,11 +240,12 @@ function BoardingHeader({
     <div className="flex items-start justify-between gap-6">
       <div className="flex flex-col gap-1 min-w-0">
         <div
-          className="font-mono uppercase text-[#0a0a0a]/55"
+          className="font-mono uppercase"
           style={{
             fontSize: titleSize,
-            fontWeight: 400,
+            fontWeight: 500,
             letterSpacing: "0.22em",
+            color: HTF_LIME,
           }}
         >
           Builder Boarding Pass

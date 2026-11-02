@@ -206,7 +206,7 @@ export default function Home() {
       a.download = `${FORMATS[format].filename}.png`;
       a.click();
       URL.revokeObjectURL(url);
-      setToast(FORMATS[format].short);
+      setToast(`${FORMATS[format].short} downloaded`);
       setTimeout(() => setToast(null), 2400);
     } finally {
       setBusy(null);
@@ -231,17 +231,19 @@ export default function Home() {
       a.download = "hack-the-feed-builder-pass.zip";
       a.click();
       URL.revokeObjectURL(url);
-      setToast("All 4");
+      setToast("All 4 downloaded");
       setTimeout(() => setToast(null), 2400);
     } finally {
       setBundling(false);
     }
   };
 
-  // Share active tab: render PNG, then try Web Share API with file + text
-  // (opens native share sheet on mobile, lets user pick Instagram/X/etc).
-  // On desktop it falls back to downloading the image and opening the
-  // platform's share intent URL with the text pre-filled.
+  // Share active tab. Mobile: native share sheet with image + text in one
+  // step. Desktop: copy image to clipboard (so ⌘V attaches it in the
+  // composer) + copy text to clipboard + open the platform's composer URL
+  // with the text pre-filled. Falls back to a file download if the browser
+  // blocks clipboard writes. @mentions can't be auto-tagged via URL on any
+  // platform, so the toast flags that they need to be re-typed to activate.
   const shareActive = async (format: Format, text: string) => {
     setSharing(true);
     try {
@@ -251,7 +253,7 @@ export default function Home() {
         type: "image/png",
       });
 
-      // Prefer native share sheet (mobile) with image + text in one go.
+      // Mobile: native share sheet attaches image + text together.
       if (
         typeof navigator !== "undefined" &&
         typeof navigator.canShare === "function" &&
@@ -263,33 +265,73 @@ export default function Home() {
           setTimeout(() => setToast(null), 2000);
           return;
         } catch (err) {
-          // AbortError = user dismissed share sheet; silently drop
           if ((err as Error)?.name === "AbortError") return;
           // other errors fall through to desktop path
         }
       }
 
-      // Desktop fallback: auto-download image + open platform intent URL.
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${FORMATS[format].filename}.png`;
-      a.click();
-      URL.revokeObjectURL(url);
+      // Desktop: try to put image + text on the clipboard. Chromium
+      // supports a single ClipboardItem with multiple MIME entries; Safari
+      // only writes the image. Either way the user can ⌘V the image into
+      // the composer.
+      let imageCopied = false;
+      try {
+        if (
+          typeof ClipboardItem !== "undefined" &&
+          navigator.clipboard &&
+          "write" in navigator.clipboard
+        ) {
+          await navigator.clipboard.write([
+            new ClipboardItem({ "image/png": blob }),
+          ]);
+          imageCopied = true;
+        }
+      } catch {
+        // clipboard.write can throw outside a user gesture or when the
+        // tab is backgrounded — fall through to the download fallback.
+      }
+
+      // Text to clipboard too (writeText is more widely supported than
+      // image writes, and gives the user a backup paste for the copy).
+      try {
+        await navigator.clipboard?.writeText?.(text);
+      } catch {
+        // ignore — composer URL still pre-fills text
+      }
+
+      // Safety net: if the image didn't make it to the clipboard,
+      // download the PNG so the user can attach it manually.
+      if (!imageCopied) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${FORMATS[format].filename}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
 
       const encoded = encodeURIComponent(text);
       const intents: Record<Format, string | null> = {
         x: `https://twitter.com/intent/tweet?text=${encoded}`,
         linkedin: `https://www.linkedin.com/feed/?shareActive=true&text=${encoded}`,
-        igpost: null, // Instagram has no web share intent — image is downloaded
+        igpost: null, // Instagram has no web share intent
         igstory: null,
       };
       const intent = intents[format];
       if (intent) {
         window.open(intent, "_blank", "noopener,noreferrer");
       }
-      setToast("Image downloaded");
-      setTimeout(() => setToast(null), 2400);
+
+      const needsMentionHint =
+        format === "linkedin" || format === "x" || format === "igpost";
+      const imageLine = imageCopied
+        ? "Image copied — ⌘V in the composer"
+        : "Image downloaded — drag it in";
+      const mentionLine = needsMentionHint
+        ? "Re-type @mentions to tag"
+        : null;
+      setToast([imageLine, mentionLine].filter(Boolean).join("\n"));
+      setTimeout(() => setToast(null), 5200);
     } finally {
       setSharing(false);
     }
@@ -1126,10 +1168,10 @@ function DownloadToast({ label }: { label: string }) {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#c6ff3d] text-[#0a0a0a] rounded-md px-4 py-3 shadow-[0_20px_40px_-10px_rgba(198,255,61,0.4)] font-mono text-[12px] tracking-[0.2em] uppercase font-bold animate-[fadein_200ms_ease-out]"
+      className="fixed bottom-6 right-6 z-50 flex items-start gap-3 bg-[#c6ff3d] text-[#0a0a0a] rounded-md px-4 py-3 shadow-[0_20px_40px_-10px_rgba(198,255,61,0.4)] font-mono text-[12px] tracking-[0.15em] uppercase font-bold animate-[fadein_200ms_ease-out] max-w-[420px]"
     >
-      <Check size={16} strokeWidth={3} aria-hidden />
-      {label} downloaded
+      <Check size={16} strokeWidth={3} aria-hidden className="mt-[2px] shrink-0" />
+      <span className="whitespace-pre-line leading-[1.4]">{label}</span>
     </div>
   );
 }

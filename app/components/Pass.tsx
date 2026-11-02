@@ -213,8 +213,13 @@ function PhotoFrame({
         <PhotoPlaceholder />
       )}
       <div
-        className="absolute left-3 bottom-3 bg-[#f3efe6]/95 text-[#0a0a0a]/80 px-2 py-[3px] text-[10px] uppercase font-mono"
-        style={{ letterSpacing: "0.14em", fontWeight: 400 }}
+        className="absolute left-3 bottom-3 text-[#0a0a0a] px-2 py-[3px] text-[10px] uppercase font-mono"
+        style={{
+          letterSpacing: "0.18em",
+          fontWeight: 600,
+          backgroundColor: "#c6ff3d",
+          boxShadow: "0 2px 6px rgba(10,10,10,0.18)",
+        }}
       >
         Builder · Paris
       </div>

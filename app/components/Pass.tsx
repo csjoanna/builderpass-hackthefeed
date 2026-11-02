@@ -77,15 +77,13 @@ function ScaledContainer({
 // ———————————————————————————————————————————————
 const CREAM = "#f3efe6";
 const INK = "#0a0a0a";
-// Stub texture: a crop of the Hack the Feed artwork positioned to show the
-// chrome/iridescent sphere background without the lettering. The real
-// material of the brand asset, not a synthetic gradient approximation.
-const HTF_TEXTURE: CSSProperties = {
-  backgroundImage: "url(/hack-the-feed-mark.png)",
-  backgroundSize: "260%",
-  backgroundPosition: "15% 85%",
-  backgroundRepeat: "no-repeat",
-};
+// Stub surface: solid cream (same tone as main) with a narrow iridescent
+// accent strip at the perforation edge. All stub information renders on
+// the calm cream panel. When a dedicated lettering-free HTF texture asset
+// is provided, swap the accent for that image.
+const STUB_CREAM = CREAM;
+const IRIDESCENT_STRIP =
+  "linear-gradient(90deg, #ff6b9d 0%, #c084fc 25%, #7dd3fc 55%, #a3e635 80%, #fde047 100%)";
 
 // All text in both main pass (cream) and stub (lime) is INK, so the Field
 // component uses one color scheme throughout.
@@ -204,23 +202,22 @@ function PhotoFrame({
       ) : (
         <PhotoPlaceholder />
       )}
-      <div className="absolute left-3 bottom-3 bg-[#c6ff3d] text-[#0a0a0a] px-2 py-1 text-[10px] font-bold tracking-[0.2em] uppercase">
+      <div className="absolute left-3 bottom-3 bg-[#f3efe6] text-[#0a0a0a] px-2 py-1 text-[10px] font-bold tracking-[0.2em] uppercase border border-[#0a0a0a]">
         Builder · Paris
       </div>
     </div>
   );
 }
 
-// Boarding-pass header on cream surface: HTF artwork left (its own dark panel
-// stands against the cream), PCW endorsement right in ink.
+// Boarding-pass header on cream main surface. No HTF artwork here — it lives
+// in the detachable stub as the event brand panel. Header is: "BUILDER
+// BOARDING PASS" title + the AI video search tagline + PCW endorsement.
 function BoardingHeader({
-  artworkSize,
   titleSize,
   subtitleSize,
   pcwSize,
   endorsementSize,
 }: {
-  artworkSize: number;
   titleSize: number;
   subtitleSize: number;
   pcwSize: number;
@@ -228,27 +225,24 @@ function BoardingHeader({
 }) {
   return (
     <div className="flex items-start justify-between gap-6">
-      <div className="flex items-center gap-4 min-w-0">
-        <HackTheFeedTitle size={artworkSize} />
-        <div className="flex flex-col gap-1 min-w-0">
-          <div
-            className="font-mono font-bold tracking-[0.35em] uppercase text-[#0a0a0a]/70"
-            style={{ fontSize: titleSize }}
-          >
-            Boarding Pass
-          </div>
-          <div
-            className="font-black leading-[1.1] text-[#0a0a0a] tracking-tight"
-            style={{ fontSize: subtitleSize }}
-          >
-            The AI video search hackathon.
-          </div>
+      <div className="flex flex-col gap-1 min-w-0">
+        <div
+          className="font-mono font-bold tracking-[0.35em] uppercase text-[#0a0a0a]/75"
+          style={{ fontSize: titleSize }}
+        >
+          Builder Boarding Pass
+        </div>
+        <div
+          className="font-black leading-[1.1] text-[#0a0a0a] tracking-tight"
+          style={{ fontSize: subtitleSize }}
+        >
+          The AI video search hackathon.
         </div>
       </div>
-      <div className="flex flex-col items-end gap-1.5 shrink-0">
+      <div className="flex flex-col items-end gap-0.5 shrink-0">
         <ParisCreatorWeekMark height={pcwSize} color={INK} />
         <div
-          className="font-mono tracking-[0.3em] uppercase font-bold text-[#0a0a0a]/70 whitespace-nowrap"
+          className="font-mono tracking-[0.1em] uppercase text-[#0a0a0a]/55 whitespace-nowrap"
           style={{ fontSize: endorsementSize }}
         >
           Official side event
@@ -258,36 +252,21 @@ function BoardingHeader({
   );
 }
 
-// Giant destination code used in every stub.
-function DestinationBlock({
-  codeSize,
-  citySize,
-  labelSize,
+// HTF event brand panel — rendered inside the stub on a black background so
+// the artwork sits on its native dark surface instead of floating.
+function HTFEventPanel({
+  size,
+  style,
 }: {
-  codeSize: number;
-  citySize: number;
-  labelSize: number;
+  size: number;
+  style?: CSSProperties;
 }) {
   return (
-    <div className="flex flex-col" style={{ gap: 4 }}>
-      <div
-        className="font-mono tracking-[0.3em] uppercase text-[#0a0a0a]/70 font-bold"
-        style={{ fontSize: labelSize }}
-      >
-        Destination
-      </div>
-      <div
-        className="font-black leading-[0.88] text-[#0a0a0a] tracking-tight"
-        style={{ fontSize: codeSize }}
-      >
-        PAR
-      </div>
-      <div
-        className="font-bold leading-[1.1] text-[#0a0a0a]"
-        style={{ fontSize: citySize }}
-      >
-        Paris, France
-      </div>
+    <div
+      className="relative flex items-center justify-center overflow-hidden rounded-sm"
+      style={{ backgroundColor: INK, ...style }}
+    >
+      <HackTheFeedTitle size={size} />
     </div>
   );
 }
@@ -308,15 +287,28 @@ function HorizontalPassContent({ data }: { data: PassData }) {
       className="relative w-full h-full font-sans rounded-3xl overflow-hidden"
       style={{ backgroundColor: CREAM }}
     >
-      {/* Lime stub background */}
+      {/* Stub bg: cream (same tone as main, perforation + narrow iridescent
+          accent provide visual separation without a busy background texture) */}
       <div
         className="absolute"
         style={{
-          ...HTF_TEXTURE,
+          backgroundColor: STUB_CREAM,
           left: PERF_X,
           top: 0,
           right: 0,
           bottom: 0,
+        }}
+      />
+      {/* Narrow iridescent accent along the stub's inner edge */}
+      <div
+        className="absolute"
+        style={{
+          left: PERF_X + 10,
+          top: 28,
+          bottom: 28,
+          width: 6,
+          background: IRIDESCENT_STRIP,
+          borderRadius: 3,
         }}
       />
 
@@ -352,7 +344,6 @@ function HorizontalPassContent({ data }: { data: PassData }) {
         }}
       >
         <BoardingHeader
-          artworkSize={165}
           titleSize={10}
           subtitleSize={16}
           pcwSize={56}
@@ -411,14 +402,14 @@ function HorizontalPassContent({ data }: { data: PassData }) {
       <div
         className="absolute flex flex-col"
         style={{
-          left: PERF_X + 24,
+          left: PERF_X + 36,
           top: 28,
           bottom: 28,
           right: 24,
           rowGap: 16,
         }}
       >
-        <DestinationBlock codeSize={78} citySize={20} labelSize={11} />
+        <HTFEventPanel size={110} style={{ height: 140 }} />
 
         <div className="border-t" style={{ borderColor: `${INK}30` }} />
 
@@ -464,11 +455,23 @@ function SquarePassContent({ data }: { data: PassData }) {
       <div
         className="absolute"
         style={{
-          ...HTF_TEXTURE,
+          backgroundColor: STUB_CREAM,
           left: 0,
           right: 0,
           top: PERF_Y,
           bottom: 0,
+        }}
+      />
+      {/* Narrow iridescent accent strip along the top of the stub */}
+      <div
+        className="absolute"
+        style={{
+          left: 36,
+          right: 36,
+          top: PERF_Y + 14,
+          height: 6,
+          background: IRIDESCENT_STRIP,
+          borderRadius: 3,
         }}
       />
       <div
@@ -496,7 +499,6 @@ function SquarePassContent({ data }: { data: PassData }) {
         style={{ left: 44, right: 44, top: 44, bottom: 1000 - PERF_Y + 32, rowGap: 20 }}
       >
         <BoardingHeader
-          artworkSize={195}
           titleSize={11}
           subtitleSize={20}
           pcwSize={68}
@@ -551,7 +553,7 @@ function SquarePassContent({ data }: { data: PassData }) {
         className="absolute flex items-stretch gap-10"
         style={{ left: 44, right: 44, top: PERF_Y + 24, bottom: 32 }}
       >
-        <DestinationBlock codeSize={94} citySize={24} labelSize={12} />
+        <HTFEventPanel size={150} style={{ height: 200, width: 300 }} />
 
         <div className="w-px shrink-0" style={{ backgroundColor: `${INK}30` }} />
 
@@ -597,7 +599,7 @@ function VerticalPassContent({ data }: { data: PassData }) {
       <div
         className="absolute"
         style={{
-          ...HTF_TEXTURE,
+          backgroundColor: STUB_CREAM,
           left: 0,
           right: 0,
           top: PERF_Y,
@@ -635,7 +637,6 @@ function VerticalPassContent({ data }: { data: PassData }) {
         }}
       >
         <BoardingHeader
-          artworkSize={270}
           titleSize={14}
           subtitleSize={30}
           pcwSize={92}
@@ -705,7 +706,7 @@ function VerticalPassContent({ data }: { data: PassData }) {
           gridTemplateColumns: "1fr 1fr",
         }}
       >
-        <DestinationBlock codeSize={120} citySize={30} labelSize={14} />
+        <HTFEventPanel size={180} style={{ height: 240, width: 360 }} />
 
         <div className="flex flex-col justify-between gap-4 border-l pl-10" style={{ borderColor: `${INK}30` }}>
           <div className="flex flex-col gap-4">

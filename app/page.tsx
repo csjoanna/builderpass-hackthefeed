@@ -351,7 +351,7 @@ export default function Home() {
       oriane: "@oriane_xyz",
       lovable: "@lovable_dev",
       albertSchool: "@AlbertSchool",
-      brut: "@brutofficial",
+      brut: "@brutofficiel",
       pcw: "@ParisCreatorWk",
     },
     linkedin: {

@@ -66,7 +66,7 @@ function ScaledContainer({
     transformOrigin: "top left",
   };
   return (
-    <div style={outerStyle} className="overflow-hidden">
+    <div style={outerStyle}>
       <div style={innerStyle}>{children}</div>
     </div>
   );
@@ -77,50 +77,50 @@ function ScaledContainer({
 // ———————————————————————————————————————————————
 const CREAM = "#f3efe6";
 const INK = "#0a0a0a";
-// Stub surface: solid cream (same tone as main) with a narrow iridescent
-// accent strip at the perforation edge. All stub information renders on
-// the calm cream panel. When a dedicated lettering-free HTF texture asset
-// is provided, swap the accent for that image.
 const STUB_CREAM = CREAM;
-const IRIDESCENT_STRIP =
-  "linear-gradient(90deg, #ff6b9d 0%, #c084fc 25%, #7dd3fc 55%, #a3e635 80%, #fde047 100%)";
+const CARD_SHADOW =
+  "0 10px 30px rgba(10,10,10,0.14), 0 2px 6px rgba(10,10,10,0.06)";
 
-// All text in both main pass (cream) and stub (lime) is INK, so the Field
-// component uses one color scheme throughout.
+type FieldWeight = "regular" | "medium" | "semibold";
+
 function Field({
   label,
   value,
   placeholder,
   valueSize,
   labelSize,
-  dim,
+  weight = "regular",
 }: {
   label: string;
   value: string;
   placeholder?: string;
   valueSize: number;
   labelSize: number;
-  dim?: boolean;
+  weight?: FieldWeight;
 }) {
   const isEmpty = !value;
   const display = value || placeholder || "—";
+  const weightNum = weight === "semibold" ? 600 : weight === "medium" ? 500 : 400;
+  const valueColor = isEmpty
+    ? "text-[#0a0a0a]/35 italic"
+    : weight === "semibold"
+    ? "text-[#0a0a0a]"
+    : "text-[#0a0a0a]/85";
   return (
-    <div className="flex flex-col" style={{ gap: 6 }}>
+    <div className="flex flex-col" style={{ gap: 5 }}>
       <div
-        className="font-mono tracking-[0.2em] uppercase text-[#0a0a0a]/75 font-bold"
-        style={{ fontSize: labelSize }}
+        className="font-mono uppercase text-[#0a0a0a]/55"
+        style={{
+          fontSize: labelSize,
+          fontWeight: 400,
+          letterSpacing: "0.14em",
+        }}
       >
         {label}
       </div>
       <div
-        className={`${
-          isEmpty
-            ? "text-[#0a0a0a]/35 italic font-normal"
-            : dim
-            ? "text-[#0a0a0a]/85 font-semibold"
-            : "text-[#0a0a0a] font-black"
-        } leading-[1.15] tracking-tight`}
-        style={{ fontSize: valueSize }}
+        className={`${valueColor} leading-[1.2] tracking-tight`}
+        style={{ fontSize: valueSize, fontWeight: weightNum }}
       >
         {display}
       </div>
@@ -164,14 +164,22 @@ function Barcode({
 
 function PhotoPlaceholder() {
   return (
-    <div className="absolute inset-0 bg-neutral-800 flex items-center justify-center">
-      <svg viewBox="0 0 100 100" className="w-[62%] h-[62%]" aria-hidden>
-        <circle cx={50} cy={50} r={50} fill="#9ca3af" />
-        <circle cx={50} cy={40} r={14} fill="#f3f4f6" />
-        <path
-          d="M 22 86 Q 22 60 50 60 Q 78 60 78 86 L 78 100 L 22 100 Z"
-          fill="#f3f4f6"
-        />
+    <div
+      className="absolute inset-0 flex items-center justify-center"
+      style={{ backgroundColor: "#ebe7dd" }}
+    >
+      <svg
+        viewBox="0 0 100 100"
+        className="w-[52%] h-[52%]"
+        fill="none"
+        stroke="#9a9387"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <circle cx={50} cy={40} r={14} />
+        <path d="M 24 86 Q 24 60 50 60 Q 76 60 76 86" />
       </svg>
     </div>
   );
@@ -195,14 +203,17 @@ function PhotoFrame({
   return (
     <div
       className="relative overflow-hidden rounded-sm shrink-0"
-      style={{ backgroundColor: INK, ...style }}
+      style={{ backgroundColor: "#ebe7dd", ...style }}
     >
       {data.photo ? (
-        <div className="absolute inset-0 bg-neutral-800" style={photoStyle} />
+        <div className="absolute inset-0" style={photoStyle} />
       ) : (
         <PhotoPlaceholder />
       )}
-      <div className="absolute left-3 bottom-3 bg-[#f3efe6] text-[#0a0a0a] px-2 py-1 text-[10px] font-bold tracking-[0.2em] uppercase border border-[#0a0a0a]">
+      <div
+        className="absolute left-3 bottom-3 bg-[#f3efe6]/95 text-[#0a0a0a]/80 px-2 py-[3px] text-[10px] uppercase font-mono"
+        style={{ letterSpacing: "0.14em", fontWeight: 400 }}
+      >
         Builder · Paris
       </div>
     </div>
@@ -227,14 +238,18 @@ function BoardingHeader({
     <div className="flex items-start justify-between gap-6">
       <div className="flex flex-col gap-1 min-w-0">
         <div
-          className="font-mono font-bold tracking-[0.35em] uppercase text-[#0a0a0a]/75"
-          style={{ fontSize: titleSize }}
+          className="font-mono uppercase text-[#0a0a0a]/55"
+          style={{
+            fontSize: titleSize,
+            fontWeight: 400,
+            letterSpacing: "0.22em",
+          }}
         >
           Builder Boarding Pass
         </div>
         <div
-          className="font-black leading-[1.1] text-[#0a0a0a] tracking-tight"
-          style={{ fontSize: subtitleSize }}
+          className="leading-[1.15] text-[#0a0a0a] tracking-tight"
+          style={{ fontSize: subtitleSize, fontWeight: 500 }}
         >
           The AI video search hackathon.
         </div>
@@ -242,8 +257,12 @@ function BoardingHeader({
       <div className="flex flex-col items-end gap-0.5 shrink-0">
         <ParisCreatorWeekMark height={pcwSize} color={INK} />
         <div
-          className="font-mono tracking-[0.1em] uppercase text-[#0a0a0a]/55 whitespace-nowrap"
-          style={{ fontSize: endorsementSize }}
+          className="font-mono uppercase text-[#0a0a0a]/55 whitespace-nowrap"
+          style={{
+            fontSize: endorsementSize,
+            fontWeight: 400,
+            letterSpacing: "0.12em",
+          }}
         >
           Official side event
         </div>
@@ -252,8 +271,8 @@ function BoardingHeader({
   );
 }
 
-// HTF event brand panel — rendered inside the stub on a black background so
-// the artwork sits on its native dark surface instead of floating.
+// HTF event brand mark — placed directly on the cream stub with no frame or
+// background panel, so the artwork reads as a mark rather than a card.
 function HTFEventPanel({
   size,
   style,
@@ -263,8 +282,8 @@ function HTFEventPanel({
 }) {
   return (
     <div
-      className="relative flex items-center justify-center overflow-hidden rounded-sm"
-      style={{ backgroundColor: INK, ...style }}
+      className="relative flex items-center justify-center"
+      style={style}
     >
       <HackTheFeedTitle size={size} />
     </div>
@@ -284,11 +303,15 @@ function HorizontalPassContent({ data }: { data: PassData }) {
   const PERF_X = 888;
   return (
     <div
-      className="relative w-full h-full font-sans rounded-3xl overflow-hidden"
-      style={{ backgroundColor: CREAM }}
+      className="relative w-full h-full font-sans overflow-hidden"
+      style={{
+        backgroundColor: CREAM,
+        borderRadius: 18,
+        boxShadow: CARD_SHADOW,
+      }}
     >
-      {/* Stub bg: cream (same tone as main, perforation + narrow iridescent
-          accent provide visual separation without a busy background texture) */}
+      {/* Stub bg: cream — same tone as main; perforation alone provides the
+          visual split, no decorative strip. */}
       <div
         className="absolute"
         style={{
@@ -297,18 +320,6 @@ function HorizontalPassContent({ data }: { data: PassData }) {
           top: 0,
           right: 0,
           bottom: 0,
-        }}
-      />
-      {/* Narrow iridescent accent along the stub's inner edge */}
-      <div
-        className="absolute"
-        style={{
-          left: PERF_X + 10,
-          top: 28,
-          bottom: 28,
-          width: 6,
-          background: IRIDESCENT_STRIP,
-          borderRadius: 3,
         }}
       />
 
@@ -327,8 +338,8 @@ function HorizontalPassContent({ data }: { data: PassData }) {
           left: PERF_X,
           top: 28,
           bottom: 28,
-          borderLeft: `2px dashed ${INK}`,
-          opacity: 0.4,
+          borderLeft: `1px dashed ${INK}`,
+          opacity: 0.3,
         }}
       />
 
@@ -347,7 +358,7 @@ function HorizontalPassContent({ data }: { data: PassData }) {
           titleSize={10}
           subtitleSize={16}
           pcwSize={56}
-          endorsementSize={19}
+          endorsementSize={10}
         />
 
         <div
@@ -360,41 +371,37 @@ function HorizontalPassContent({ data }: { data: PassData }) {
               label="Passenger"
               value={name}
               placeholder="Your name"
-              labelSize={11}
+              labelSize={10}
               valueSize={38}
+              weight="semibold"
             />
             <div className="grid grid-cols-2" style={{ gap: 8 }}>
-              <Field
-                label="Team"
-                value={team}
-                labelSize={10}
-                valueSize={16}
-                dim
-              />
-              <Field
-                label="Role"
-                value={role}
-                labelSize={10}
-                valueSize={16}
-                dim
-              />
+              <Field label="Team" value={team} labelSize={9} valueSize={16} />
+              <Field label="Role" value={role} labelSize={9} valueSize={16} />
             </div>
             <Field
               label="Building"
               value={building}
               placeholder="One clear sentence about what you're building."
-              labelSize={10}
+              labelSize={9}
               valueSize={20}
+              weight="medium"
             />
           </div>
         </div>
 
         {/* Partners inline on cream — no separate strip needed */}
-        <div className="pt-3 border-t border-[#0a0a0a]/15 flex flex-col gap-2">
-          <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#0a0a0a]/60">
+        <div
+          className="pt-3 flex flex-col gap-2"
+          style={{ borderTop: `1px solid ${INK}1f` }}
+        >
+          <div
+            className="font-mono uppercase text-[#0a0a0a]/55"
+            style={{ fontSize: 9, letterSpacing: "0.22em", fontWeight: 400 }}
+          >
             In partnership with
           </div>
-          <PartnerRow size={29} color={INK} gap={32} wrap={false} />
+          <PartnerRow size={26} color={INK} gap={28} wrap={false} />
         </div>
       </div>
 
@@ -409,14 +416,14 @@ function HorizontalPassContent({ data }: { data: PassData }) {
           rowGap: 16,
         }}
       >
-        <HTFEventPanel size={110} style={{ height: 140 }} />
+        <HTFEventPanel size={118} style={{ height: 140 }} />
 
-        <div className="border-t" style={{ borderColor: `${INK}30` }} />
+        <div style={{ borderTop: `1px solid ${INK}1f` }} />
 
         <div className="flex flex-col" style={{ gap: 10 }}>
-          <Field label="Date" value="Sat · 7 Nov 2026" labelSize={11} valueSize={18} />
-          <Field label="Event Hours" value="10:00 — 17:00" labelSize={11} valueSize={18} />
-          <Field label="Track" value={data.track} labelSize={11} valueSize={18} />
+          <Field label="Date" value="Sat · 7 Nov 2026" labelSize={10} valueSize={16} />
+          <Field label="Event Hours" value="10:00 — 17:00" labelSize={10} valueSize={16} />
+          <Field label="Track" value={data.track} labelSize={10} valueSize={16} />
         </div>
 
         <div className="mt-auto flex flex-col gap-1.5">
@@ -426,7 +433,10 @@ function HorizontalPassContent({ data }: { data: PassData }) {
             count={28}
             thickness={1.7}
           />
-          <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#0a0a0a]/60 font-bold">
+          <div
+            className="font-mono uppercase text-[#0a0a0a]/55"
+            style={{ fontSize: 9, letterSpacing: "0.22em", fontWeight: 400 }}
+          >
             HTF · 7.11.26
           </div>
         </div>
@@ -449,8 +459,12 @@ function SquarePassContent({ data }: { data: PassData }) {
   const PERF_Y = 760;
   return (
     <div
-      className="relative w-full h-full font-sans rounded-3xl overflow-hidden"
-      style={{ backgroundColor: CREAM }}
+      className="relative w-full h-full font-sans overflow-hidden"
+      style={{
+        backgroundColor: CREAM,
+        borderRadius: 18,
+        boxShadow: CARD_SHADOW,
+      }}
     >
       <div
         className="absolute"
@@ -460,18 +474,6 @@ function SquarePassContent({ data }: { data: PassData }) {
           right: 0,
           top: PERF_Y,
           bottom: 0,
-        }}
-      />
-      {/* Narrow iridescent accent strip along the top of the stub */}
-      <div
-        className="absolute"
-        style={{
-          left: 36,
-          right: 36,
-          top: PERF_Y + 14,
-          height: 6,
-          background: IRIDESCENT_STRIP,
-          borderRadius: 3,
         }}
       />
       <div
@@ -488,8 +490,8 @@ function SquarePassContent({ data }: { data: PassData }) {
           left: 36,
           right: 36,
           top: PERF_Y,
-          borderTop: `2px dashed ${INK}`,
-          opacity: 0.4,
+          borderTop: `1px dashed ${INK}`,
+          opacity: 0.3,
         }}
       />
 
@@ -500,51 +502,59 @@ function SquarePassContent({ data }: { data: PassData }) {
       >
         <BoardingHeader
           titleSize={11}
-          subtitleSize={20}
+          subtitleSize={22}
           pcwSize={68}
-          endorsementSize={15}
+          endorsementSize={11}
         />
 
-        {/* Portrait + identity column that fills the empty space beside photo */}
+        {/* Portrait + identity column — tighter gaps so the right column fills
+            the full height of the 300px photo without a hollow middle. */}
         <div
           className="grid gap-7 flex-1 min-h-0"
           style={{ gridTemplateColumns: "300px 1fr" }}
         >
           <PhotoFrame data={data} style={{ width: 300, height: 300 }} />
-          <div className="flex flex-col" style={{ gap: 16 }}>
+          <div className="flex flex-col justify-between py-1" style={{ gap: 14 }}>
             <Field
               label="Passenger"
               value={name}
               placeholder="Your name"
-              labelSize={11}
-              valueSize={56}
+              labelSize={10}
+              valueSize={54}
+              weight="semibold"
             />
             <div className="grid grid-cols-2" style={{ gap: 12 }}>
-              <Field label="Team" value={team} labelSize={11} valueSize={20} dim />
-              <Field label="Role" value={role} labelSize={11} valueSize={20} dim />
+              <Field label="Team" value={team} labelSize={10} valueSize={18} />
+              <Field label="Role" value={role} labelSize={10} valueSize={18} />
             </div>
             <Field
               label="Destination"
               value="Hack the Feed · Paris"
-              labelSize={11}
-              valueSize={20}
-              dim
+              labelSize={10}
+              valueSize={18}
             />
             <Field
               label="Building"
               value={building}
               placeholder="One clear sentence about what you're building."
-              labelSize={11}
-              valueSize={30}
+              labelSize={10}
+              valueSize={28}
+              weight="medium"
             />
           </div>
         </div>
 
-        <div className="pt-3 border-t border-[#0a0a0a]/15 flex flex-col gap-2">
-          <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#0a0a0a]/60">
+        <div
+          className="pt-3 flex flex-col gap-2"
+          style={{ borderTop: `1px solid ${INK}1f` }}
+        >
+          <div
+            className="font-mono uppercase text-[#0a0a0a]/55"
+            style={{ fontSize: 10, letterSpacing: "0.22em", fontWeight: 400 }}
+          >
             In partnership with
           </div>
-          <PartnerRow size={34} color={INK} gap={38} wrap={false} />
+          <PartnerRow size={30} color={INK} gap={34} wrap={false} />
         </div>
       </div>
 
@@ -553,18 +563,21 @@ function SquarePassContent({ data }: { data: PassData }) {
         className="absolute flex items-stretch gap-10"
         style={{ left: 44, right: 44, top: PERF_Y + 24, bottom: 32 }}
       >
-        <HTFEventPanel size={150} style={{ height: 200, width: 300 }} />
+        <HTFEventPanel size={170} style={{ height: 200, width: 300 }} />
 
-        <div className="w-px shrink-0" style={{ backgroundColor: `${INK}30` }} />
+        <div className="w-px shrink-0" style={{ backgroundColor: `${INK}1f` }} />
 
         <div className="flex-1 flex flex-col justify-between py-1 gap-4">
           <div className="grid grid-cols-3 gap-5">
-            <Field label="Date" value="Sat · 7 Nov 2026" labelSize={12} valueSize={22} />
-            <Field label="Event Hours" value="10:00 — 17:00" labelSize={12} valueSize={22} />
-            <Field label="Track" value={data.track} labelSize={12} valueSize={22} />
+            <Field label="Date" value="Sat · 7 Nov 2026" labelSize={10} valueSize={20} />
+            <Field label="Event Hours" value="10:00 — 17:00" labelSize={10} valueSize={20} />
+            <Field label="Track" value={data.track} labelSize={10} valueSize={20} />
           </div>
           <div className="flex items-end justify-between gap-6">
-            <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#0a0a0a]/60 font-bold">
+            <div
+              className="font-mono uppercase text-[#0a0a0a]/55"
+              style={{ fontSize: 10, letterSpacing: "0.22em", fontWeight: 400 }}
+            >
               HTF · PAR · 7.11.26
             </div>
             <Barcode
@@ -593,8 +606,12 @@ function VerticalPassContent({ data }: { data: PassData }) {
   const PERF_Y = 1230;
   return (
     <div
-      className="relative w-full h-full font-sans rounded-3xl overflow-hidden"
-      style={{ backgroundColor: CREAM }}
+      className="relative w-full h-full font-sans overflow-hidden"
+      style={{
+        backgroundColor: CREAM,
+        borderRadius: 18,
+        boxShadow: CARD_SHADOW,
+      }}
     >
       <div
         className="absolute"
@@ -620,8 +637,8 @@ function VerticalPassContent({ data }: { data: PassData }) {
           left: 36,
           right: 36,
           top: PERF_Y,
-          borderTop: `2px dashed ${INK}`,
-          opacity: 0.4,
+          borderTop: `1px dashed ${INK}`,
+          opacity: 0.3,
         }}
       />
 
@@ -637,13 +654,13 @@ function VerticalPassContent({ data }: { data: PassData }) {
         }}
       >
         <BoardingHeader
-          titleSize={14}
+          titleSize={13}
           subtitleSize={30}
           pcwSize={92}
-          endorsementSize={19}
+          endorsementSize={12}
         />
 
-        <div className="border-t border-[#0a0a0a]/15" />
+        <div style={{ borderTop: `1px solid ${INK}1f` }} />
 
         <div className="flex justify-center">
           <PhotoFrame data={data} style={{ width: 420, height: 420 }} />
@@ -653,26 +670,27 @@ function VerticalPassContent({ data }: { data: PassData }) {
           label="Passenger"
           value={name}
           placeholder="Your name"
-          labelSize={14}
+          labelSize={12}
           valueSize={60}
+          weight="semibold"
         />
         <div className="grid grid-cols-2" style={{ gap: 24 }}>
-          <Field label="Team" value={team} labelSize={13} valueSize={26} dim />
-          <Field label="Role" value={role} labelSize={13} valueSize={26} dim />
+          <Field label="Team" value={team} labelSize={11} valueSize={24} />
+          <Field label="Role" value={role} labelSize={11} valueSize={24} />
         </div>
         <Field
           label="Destination"
           value="Hack the Feed · Paris"
-          labelSize={13}
-          valueSize={26}
-          dim
+          labelSize={11}
+          valueSize={24}
         />
         <Field
           label="Building"
           value={building}
           placeholder="One clear sentence about what you're building."
-          labelSize={14}
+          labelSize={12}
           valueSize={30}
+          weight="medium"
         />
       </div>
 
@@ -689,10 +707,13 @@ function VerticalPassContent({ data }: { data: PassData }) {
           gap: 14,
         }}
       >
-        <div className="font-mono text-[13px] tracking-[0.2em] uppercase text-[#0a0a0a]/75 font-bold">
+        <div
+          className="font-mono uppercase text-[#0a0a0a]/55"
+          style={{ fontSize: 12, letterSpacing: "0.22em", fontWeight: 400 }}
+        >
           In partnership with
         </div>
-        <PartnerRow size={42} color={INK} gap={46} wrap={false} />
+        <PartnerRow size={38} color={INK} gap={44} wrap={false} />
       </div>
 
       {/* STUB · 1230 → 1500 — 2 readable columns */}
@@ -706,23 +727,29 @@ function VerticalPassContent({ data }: { data: PassData }) {
           gridTemplateColumns: "1fr 1fr",
         }}
       >
-        <HTFEventPanel size={180} style={{ height: 240, width: 360 }} />
+        <HTFEventPanel size={200} style={{ height: 240, width: 360 }} />
 
-        <div className="flex flex-col justify-between gap-4 border-l pl-10" style={{ borderColor: `${INK}30` }}>
+        <div
+          className="flex flex-col justify-between gap-4 border-l pl-10"
+          style={{ borderColor: `${INK}1f` }}
+        >
           <div className="flex flex-col gap-4">
-            <Field label="Date" value="Sat · 7 Nov 2026" labelSize={14} valueSize={28} />
-            <Field label="Event Hours" value="10:00 — 17:00" labelSize={14} valueSize={28} />
-            <Field label="Track" value={data.track} labelSize={14} valueSize={28} />
+            <Field label="Date" value="Sat · 7 Nov 2026" labelSize={11} valueSize={24} />
+            <Field label="Event Hours" value="10:00 — 17:00" labelSize={11} valueSize={24} />
+            <Field label="Track" value={data.track} labelSize={11} valueSize={24} />
           </div>
           <div className="flex items-end justify-between gap-4">
-            <div className="font-mono text-[11px] tracking-[0.3em] uppercase text-[#0a0a0a]/60 font-bold">
+            <div
+              className="font-mono uppercase text-[#0a0a0a]/55"
+              style={{ fontSize: 10, letterSpacing: "0.22em", fontWeight: 400 }}
+            >
               HTF · 7.11.26
             </div>
             <Barcode
               seed={name + team + data.track}
-              height={48}
-              count={32}
-              thickness={2.4}
+              height={44}
+              count={28}
+              thickness={2.2}
             />
           </div>
         </div>

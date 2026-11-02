@@ -130,6 +130,59 @@ function Field({
   );
 }
 
+// HTF-lime chip for the Track field. Reads as the brand sticker on the
+// stub, aligned with the "Builder · Paris" chip on the portrait.
+function TrackChip({
+  value,
+  labelSize,
+  valueSize,
+  padX = 14,
+  padY = 10,
+}: {
+  value: string;
+  labelSize: number;
+  valueSize: number;
+  padX?: number;
+  padY?: number;
+}) {
+  return (
+    <div
+      className="inline-flex flex-col items-start self-start rounded-md"
+      style={{
+        backgroundColor: "#c6ff3d",
+        paddingLeft: padX,
+        paddingRight: padX,
+        paddingTop: padY,
+        paddingBottom: padY,
+        boxShadow: "0 2px 6px rgba(10,10,10,0.14)",
+        gap: 2,
+      }}
+    >
+      <div
+        className="font-mono uppercase text-[#0a0a0a]/60"
+        style={{
+          fontSize: labelSize,
+          letterSpacing: "0.2em",
+          fontWeight: 500,
+        }}
+      >
+        Track
+      </div>
+      <div
+        className="font-mono uppercase text-[#0a0a0a]"
+        style={{
+          fontSize: valueSize,
+          letterSpacing: "0.08em",
+          fontWeight: 700,
+          lineHeight: 1.05,
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
 function Barcode({
   seed,
   height,
@@ -431,7 +484,7 @@ function HorizontalPassContent({ data }: { data: PassData }) {
         <div className="flex flex-col" style={{ gap: 10 }}>
           <Field label="Date" value="Sat · 7 Nov 2026" labelSize={10} valueSize={16} />
           <Field label="Event Hours" value="10:00 — 17:00" labelSize={10} valueSize={16} />
-          <Field label="Track" value={data.track} labelSize={10} valueSize={16} />
+          <TrackChip value={data.track} labelSize={9} valueSize={14} padX={12} padY={8} />
         </div>
 
         <div className="mt-auto flex flex-col gap-1.5">
@@ -576,10 +629,10 @@ function SquarePassContent({ data }: { data: PassData }) {
         <div className="w-px shrink-0" style={{ backgroundColor: `${INK}1f` }} />
 
         <div className="flex-1 flex flex-col justify-between py-1 gap-4">
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-3 gap-5 items-start">
             <Field label="Date" value="Sat · 7 Nov 2026" labelSize={10} valueSize={20} />
             <Field label="Event Hours" value="10:00 — 17:00" labelSize={10} valueSize={20} />
-            <Field label="Track" value={data.track} labelSize={10} valueSize={20} />
+            <TrackChip value={data.track} labelSize={10} valueSize={18} padX={14} padY={10} />
           </div>
           <div className="flex items-end justify-between gap-6">
             <div
@@ -741,10 +794,10 @@ function VerticalPassContent({ data }: { data: PassData }) {
           className="flex flex-col justify-between gap-4 border-l pl-10"
           style={{ borderColor: `${INK}1f` }}
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 items-start">
             <Field label="Date" value="Sat · 7 Nov 2026" labelSize={11} valueSize={24} />
             <Field label="Event Hours" value="10:00 — 17:00" labelSize={11} valueSize={24} />
-            <Field label="Track" value={data.track} labelSize={11} valueSize={24} />
+            <TrackChip value={data.track} labelSize={11} valueSize={22} padX={16} padY={12} />
           </div>
           <div className="flex items-end justify-between gap-4">
             <div
